@@ -16,6 +16,7 @@ This project is a full stack web application for tracking healthy habits. It is 
 - Server-side rendering
 
 ## Tech Stack
+
 - MongoDB
 - Express
 - React
@@ -24,4 +25,4 @@ This project is a full stack web application for tracking healthy habits. It is 
 - Next.js
 - Git
 - Github
-- 
+-
