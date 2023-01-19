@@ -20,17 +20,22 @@ const getAllUsers = asyncHandler(async (req, res) => {
 // @access Private
 const createNewUser = asyncHandler(async (req, res) => {
   // ...
-  const { username, password } = req.body
+  const { username, email, password } = req.body
 
   // Confirm data
-  if (!username || !password) {
+  if (!username || !email || !password) {
     return res.status(400).json({ message: 'All fields are required' })
   }
 
-  // Duplicate
-  const duplicate = await User.findOne({ username }).lean().exec()
-  if (duplicate) {
+  // Duplicate user check
+  const duplicateUser = await User.findOne({ username }).lean().exec()
+  if (duplicateUser) {
     return res.status(409).json({ message: 'Duplicate username' })
+  }
+  // Duplicate email check
+  const duplicateEmail = await User.findOne({ email }).lean().exec()
+  if (duplicateEmail) {
+    return res.status(409).json({ message: 'Duplicate email' })
   }
 
   // Hash password
@@ -49,10 +54,10 @@ const createNewUser = asyncHandler(async (req, res) => {
 // @route PATCH /users
 // @access Private
 const updateUser = asyncHandler(async (req, res) => {
-  const { id, username, password } = req.body
+  const { id, username, email, password } = req.body
 
   // confirm data
-  if (!id || !username) {
+  if (!id || !username || !email) {
     return res.status(400).json({ message: 'All fields are required' })
   }
 
@@ -63,13 +68,22 @@ const updateUser = asyncHandler(async (req, res) => {
   }
 
   // Check for user with requested username
-  const duplicate = await User.findOne({ username }).lean().exec()
+  const duplicateUser = await User.findOne({ username }).lean().exec()
   // Check if user with requested username is the original user
-  if (duplicate && duplicate?._id.toString() !== id) {
+  if (duplicateUser && duplicateUser?._id.toString() !== id) {
     return res.status(409).json({ message: 'Duplicate username' })
   }
 
   user.username = username
+
+  // Check for user with requested email
+  const duplicateEmail = await User.findOne({ email }).lean().exec()
+  // Check if user with requested username is the original user
+  if (duplicateEmail && duplicateEmail?._id.toString() !== id) {
+    return res.status(409).json({ message: 'Duplicate email' })
+  }
+
+  user.email = email
 
   if (password) {
     // Has password
