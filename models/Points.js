@@ -5,12 +5,8 @@ const { Schema } = mongoose
 const pointsSchema = new Schema({
   user: { type: Schema.Types.ObjectId, ref: 'User', required: true },
   habit: { type: Schema.Types.ObjectId, ref: 'Habit', required: true },
-  history: [
-    {
-      date: { type: Date, required: true },
-      points: { type: Number, required: true }
-    }
-  ]
+  points: { type: Number, required: true },
+  date: { type: Date, default: Date.now }
 })
 
 module.exports = mongoose.model('Points', pointsSchema)
