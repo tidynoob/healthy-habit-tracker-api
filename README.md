@@ -22,6 +22,7 @@ This API is created as the backend for a full stack web application for tracking
 | --- | --- | --- |
 | /users | GET | Get all users |
 | /users/:id | GET | Get a specific user by id |
+| /users/:id/habits | GET | Get habits for a specific user |
 | /users | POST | Create a new user |
 | /users/:id | PATCH | Update a specific user by id |
 | /users/:id | DELETE | Delete a specific user by id |
