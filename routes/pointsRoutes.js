@@ -1,13 +1,13 @@
 const express = require('express')
-const pointsController = require('../controllers/pointsController')
+const pointController = require('../controllers/pointController')
 
 const router = express.Router()
 
 router
   .route('/')
-  .get(pointsController.getAllPoints)
-  .post(pointsController.createNewPoints)
-  .patch(pointsController.updatePoints)
-  .delete(pointsController.deletePoints)
+  .get(pointController.getAllPoints)
+  .post(pointController.createNewPoints)
+  .patch(pointController.updatePoints)
+  .delete(pointController.deletePoints)
 
 module.exports = router
