@@ -1,7 +1,10 @@
 const express = require('express')
 const habitController = require('../controllers/habitController')
+const verifyJWT = require('../middleware/verifyJWT')
 
 const router = express.Router()
+
+router.use(verifyJWT)
 
 router.route('/:id/points').get(habitController.getPointsByHabit)
 
