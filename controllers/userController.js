@@ -1,6 +1,7 @@
 const asyncHandler = require('express-async-handler')
 const bcrypt = require('bcryptjs')
 const User = require('../models/User')
+const Habit = require('../models/Habit')
 // const Points = require('../models/Points')
 // const Habit = require('../models/Habit')
 
@@ -21,8 +22,8 @@ const getAllUsers = asyncHandler(async (req, res) => {
 const getUser = asyncHandler(async (req, res) => {
   const { id } = req.params
   const user = await User.findById(id).select('-password').lean()
-  if (!user?.length) {
-    return res.status(400).json({ message: 'No users found' })
+  if (!user) {
+    return res.status(400).json({ message: 'No user found with that id' })
   }
   return res.json(user)
 })
@@ -68,6 +69,12 @@ const createNewUser = asyncHandler(async (req, res) => {
 const updateUser = asyncHandler(async (req, res) => {
   const { id } = req.params
   const { username, email, password } = req.body
+  console.log({
+    id,
+    username,
+    email,
+    password
+  })
 
   // confirm data
   if (!id || !username || !email) {
@@ -131,10 +138,28 @@ const deleteUser = asyncHandler(async (req, res) => {
   return res.json(reply)
 })
 
+// @desc Get habits for a user
+// @route GET /users/:id/habits
+// @access Private
+const getHabitsByUser = asyncHandler(async (req, res) => {
+  const { id } = req.params
+
+  const user = await User.findById(id).exec()
+
+  if (!user) {
+    return res.status(400).json({ message: 'User not found' })
+  }
+
+  const habits = await Habit.find({ user }).exec()
+
+  return res.json(habits)
+})
+
 module.exports = {
   getAllUsers,
   getUser,
   createNewUser,
   updateUser,
-  deleteUser
+  deleteUser,
+  getHabitsByUser
 }

@@ -3,11 +3,8 @@ const pointController = require('../controllers/pointController')
 
 const router = express.Router()
 
-router
-  .route('/')
-  .get(pointController.getAllPoints)
-  .post(pointController.createNewPoints)
-  .patch(pointController.updatePoints)
-  .delete(pointController.deletePoints)
+router.route('/:habitId').delete(pointController.deletePointForHabit)
+
+router.route('/').post(pointController.createNewPoint)
 
 module.exports = router

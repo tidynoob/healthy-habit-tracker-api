@@ -3,6 +3,8 @@ const userController = require('../controllers/userController')
 
 const router = express.Router()
 
+router.route('/:id/habits').get(userController.getHabitsByUser)
+
 router
   .route('/:id')
   .get(userController.getUser)
