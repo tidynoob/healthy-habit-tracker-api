@@ -124,8 +124,8 @@ const deleteHabit = asyncHandler(async (req, res) => {
 const getPointsByHabit = asyncHandler(async (req, res) => {
   // the habit info contains the user already, so we don't need a userId
   const { id } = req.params
-  console.log(id)
-  console.log(req.params)
+  // console.log(id)
+  // console.log(req.params)
 
   const habit = await Habit.findById(id).lean().exec()
   if (!habit) {
