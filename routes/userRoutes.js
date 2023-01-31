@@ -4,6 +4,8 @@ const verifyJWT = require('../middleware/verifyJWT')
 
 const router = express.Router()
 
+router.post('/new', userController.createNewUser)
+
 router.use(verifyJWT)
 
 router.route('/:id/habits').get(userController.getHabitsByUser)
@@ -14,9 +16,6 @@ router
   .patch(userController.updateUser)
   .delete(userController.deleteUser)
 
-router
-  .route('/')
-  .get(userController.getAllUsers)
-  .post(userController.createNewUser)
+router.route('/').get(userController.getAllUsers)
 
 module.exports = router
