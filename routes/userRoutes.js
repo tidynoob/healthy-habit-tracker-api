@@ -9,6 +9,7 @@ router.post('/new', userController.createNewUser)
 router.use(verifyJWT)
 
 router.route('/:id/habits').get(userController.getHabitsByUser)
+// router.route('/:id/points').post(userController.getPointsByUser)
 
 router
   .route('/:id')

@@ -6,8 +6,6 @@ const router = express.Router()
 
 router.use(verifyJWT)
 
-router.route('/:id/points').get(habitController.getPointsByHabit)
-
 router
   .route('/:id')
   .get(habitController.getHabit)

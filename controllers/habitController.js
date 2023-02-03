@@ -1,6 +1,6 @@
 const asyncHandler = require('express-async-handler')
+const { isSameDay } = require('date-fns')
 const User = require('../models/User')
-const Points = require('../models/Points')
 const Habit = require('../models/Habit')
 
 // @desc Get all habits
@@ -14,8 +14,8 @@ const getAllHabits = asyncHandler(async (req, res) => {
   return res.json(habits)
 })
 
-// @desc Get all habits
-// @route GET /habits
+// @desc Get specific habit
+// @route GET /habits/:id
 // @access Private
 const getHabit = asyncHandler(async (req, res) => {
   const { id } = req.params
@@ -67,10 +67,15 @@ const createNewHabit = asyncHandler(async (req, res) => {
 // @access Private
 const updateHabit = asyncHandler(async (req, res) => {
   const { id } = req.params
-  const { name, user } = req.body
+  const { name, user, date } = req.body
+  console.log(req.body)
+
+  console.log(name)
+  console.log(user)
+  console.log(date)
 
   // confirm data
-  if (!id || !name || !user) {
+  if (!id || !date || !name) {
     return res.status(400).json({ message: 'All fields are required' })
   }
 
@@ -89,6 +94,18 @@ const updateHabit = asyncHandler(async (req, res) => {
 
   habit.name = name
   habit.user = user
+
+  const dateToUse = new Date(date)
+
+  const dateCompleted = habit.points.find((pointDate) => {
+    return isSameDay(pointDate, dateToUse)
+  })
+  console.log(dateCompleted)
+  if (!dateCompleted) {
+    habit.points = [...habit.points, dateToUse.toDateString()]
+  } else {
+    habit.points = habit.points.filter((p) => !isSameDay(p, dateToUse))
+  }
 
   const updatedHabit = await habit.save()
 
@@ -118,37 +135,10 @@ const deleteHabit = asyncHandler(async (req, res) => {
   return res.json(reply)
 })
 
-// @desc Get points for a user and habit
-// @route GET /points/:userId/:habitId
-// @access Private
-const getPointsByHabit = asyncHandler(async (req, res) => {
-  // the habit info contains the user already, so we don't need a userId
-  const { id } = req.params
-  // console.log(id)
-  // console.log(req.params)
-
-  const habit = await Habit.findById(id).lean().exec()
-  if (!habit) {
-    return res.status(404).json({ message: 'Habit not found' })
-  }
-  const user = await User.findById(habit.user).lean().exec()
-  if (!user) {
-    return res.status(404).json({ message: 'No user found' })
-  }
-
-  const points = await Points.find({ user, habit })
-    .sort({ date: -1 })
-    .lean()
-    .exec()
-
-  return res.json(points)
-})
-
 module.exports = {
   getAllHabits,
   getHabit,
   createNewHabit,
   updateHabit,
-  deleteHabit,
-  getPointsByHabit
+  deleteHabit
 }
