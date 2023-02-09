@@ -1,15 +1,14 @@
 const express = require('express')
 const userController = require('../controllers/userController')
-const verifyJWT = require('../middleware/verifyJWT')
+const jwtCheck = require('../middleware/auth')
 
 const router = express.Router()
 
 router.post('/new', userController.createNewUser)
 
-router.use(verifyJWT)
+router.use(jwtCheck)
 
 router.route('/:id/habits').get(userController.getHabitsByUser)
-// router.route('/:id/points').post(userController.getPointsByUser)
 
 router
   .route('/:id')

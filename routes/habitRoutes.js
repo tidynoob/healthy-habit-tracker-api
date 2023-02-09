@@ -1,10 +1,10 @@
 const express = require('express')
 const habitController = require('../controllers/habitController')
-const verifyJWT = require('../middleware/verifyJWT')
+const jwtCheck = require('../middleware/auth')
 
 const router = express.Router()
 
-router.use(verifyJWT)
+router.use(jwtCheck)
 
 router
   .route('/:id')
