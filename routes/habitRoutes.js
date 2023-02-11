@@ -6,6 +6,8 @@ const router = express.Router()
 
 router.use(jwtCheck)
 
+router.route('/user/:userId').get(habitController.getHabitsByUser)
+
 router
   .route('/:id')
   .get(habitController.getHabit)

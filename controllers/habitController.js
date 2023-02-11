@@ -1,13 +1,13 @@
 const asyncHandler = require('express-async-handler')
 const { isSameDay } = require('date-fns')
-const User = require('../models/User')
+// const User = require('../models/User')
 const Habit = require('../models/Habit')
 
 // @desc Get all habits
 // @route GET /habits
 // @access Private
 const getAllHabits = asyncHandler(async (req, res) => {
-  const habits = await Habit.find().populate('user', '-password').lean()
+  const habits = await Habit.find().lean()
   if (!habits?.length) {
     return res.status(400).json({ message: 'No habits found' })
   }
@@ -26,32 +26,36 @@ const getHabit = asyncHandler(async (req, res) => {
   return res.json(habit)
 })
 
+// @desc Get habits for a user
+// @route GET /habits/user/:id
+// @access Private
+const getHabitsByUser = asyncHandler(async (req, res) => {
+  const { userId } = req.params
+
+  const habits = await Habit.find({ userId }).exec()
+
+  return res.json(habits)
+})
+
 // @desc Create new habit
 // @route POST /habits
 // @access Private
 const createNewHabit = asyncHandler(async (req, res) => {
   // ...
-  const { name, user } = req.body
+  const { name, userId } = req.body
 
   // Confirm data
-  if (!name || !user) {
+  if (!name || !userId) {
     return res.status(400).json({ message: 'All fields are required' })
   }
 
-  const checkUser = await User.findById(user)
-  if (!checkUser) {
-    return res.status(400).json({ message: 'Invalid user' })
-  }
-
-  const { username } = checkUser
-
   // Duplicate check
-  const duplicate = await Habit.findOne({ name, user }).lean().exec()
+  const duplicate = await Habit.findOne({ name, userId }).lean().exec()
   if (duplicate) {
     return res.status(409).json({ message: 'Duplicate habit' })
   }
 
-  const habitObject = { name, user }
+  const habitObject = { name, userId }
   const habit = await Habit.create(habitObject)
 
   if (!habit) {
@@ -59,7 +63,7 @@ const createNewHabit = asyncHandler(async (req, res) => {
   }
   return res
     .status(201)
-    .json({ message: `New habit ${name} crated for ${username}` })
+    .json({ message: `New habit ${name} crated for ${userId}` })
 })
 
 // @desc Update a user
@@ -67,11 +71,11 @@ const createNewHabit = asyncHandler(async (req, res) => {
 // @access Private
 const updateHabit = asyncHandler(async (req, res) => {
   const { id } = req.params
-  const { name, user, date } = req.body
+  const { name, userId, date } = req.body
   console.log(req.body)
 
   console.log(name)
-  console.log(user)
+  console.log(userId)
   console.log(date)
 
   // confirm data
@@ -84,16 +88,6 @@ const updateHabit = asyncHandler(async (req, res) => {
   if (!habit) {
     return res.status(400).json({ message: 'Habit not found' })
   }
-
-  // Check for duplicate
-  const duplicate = await Habit.findOne({ name, user }).lean().exec()
-  // Check if user with requested username is the original user
-  if (duplicate && duplicate?._id.toString() !== id) {
-    return res.status(409).json({ message: 'Duplicate habit' })
-  }
-
-  habit.name = name
-  habit.user = user
 
   const dateToUse = new Date(date)
 
@@ -140,5 +134,6 @@ module.exports = {
   getHabit,
   createNewHabit,
   updateHabit,
-  deleteHabit
+  deleteHabit,
+  getHabitsByUser
 }
